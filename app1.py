@@ -8,6 +8,7 @@ from langchain.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+load_dotenv()
 groq=os.environ.get('groq')
 
 
@@ -17,7 +18,7 @@ url = st.text_input("Enter a URL:", "")
 
 if url:
     embedding = HuggingFaceEmbeddings()
-    llm = ChatGroq(temperature=0, api_key=groq, model_name="llama-3.1-70b-versatile")
+    llm = ChatGroq(temperature=0, api_key=groq, model_name="llama-3.3-70b-versatile")
 
     loader = UnstructuredURLLoader(urls=[url])
     text_splitter = RecursiveCharacterTextSplitter(
