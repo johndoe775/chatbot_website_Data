@@ -18,7 +18,7 @@ st.title("Question Answering Chatbot")
 url = st.text_input("Enter a URL:", "")
 
 # Initialize memory
-memory = ConversationBufferMemory()
+memory = ConversationBufferMemory(output_key='result')
 
 if url:
     embedding = HuggingFaceEmbeddings()
@@ -40,6 +40,8 @@ if url:
 
     qa_chain = RetrievalQA.from_chain_type(
         llm,
+        memory=memory,
+        #output_key='result',
         retriever=db.as_retriever(),
         return_source_documents=True,
         chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
@@ -48,19 +50,10 @@ if url:
     query = st.text_input("Enter your question:", "")
 
     if query:
-        # Store the query in memory
-        memory.add_user_message(query)
 
         result = qa_chain({"query": query})
         st.write(result["result"])
 
-        # Store the response in memory
-        memory.add_ai_message(result["result"])
-
         st.write("Source documents:")
         for doc in result["source_documents"]:
             st.write(doc.page_content)
-
-        # Display conversation history
-        st.write("Conversation History:")
-        st.write(memory.get_history())
