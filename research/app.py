@@ -7,15 +7,18 @@ from langchain_community.document_loaders import UnstructuredURLLoader
 from langchain.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
+from langchain.memory import ConversationBufferMemory  # Import memory class
 from dotenv import load_dotenv
 
 load_dotenv()
 groq = os.environ.get("groq")
 
-
-st.title("Question Answering App")
+st.title("Question Answering Chatbot")
 
 url = st.text_input("Enter a URL:", "")
+
+# Initialize memory
+memory = ConversationBufferMemory()
 
 if url:
     embedding = HuggingFaceEmbeddings()
@@ -45,8 +48,19 @@ if url:
     query = st.text_input("Enter your question:", "")
 
     if query:
+        # Store the query in memory
+        memory.add_user_message(query)
+
         result = qa_chain({"query": query})
         st.write(result["result"])
+
+        # Store the response in memory
+        memory.add_ai_message(result["result"])
+
         st.write("Source documents:")
         for doc in result["source_documents"]:
             st.write(doc.page_content)
+
+        # Display conversation history
+        st.write("Conversation History:")
+        st.write(memory.get_history())

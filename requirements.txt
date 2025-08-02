@@ -9,3 +9,4 @@ langchain_experimental
 chromadb
 faiss-cpu
 unstructured
+black
